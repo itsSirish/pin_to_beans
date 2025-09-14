@@ -182,11 +182,105 @@ Key settings in `pin_to_beans/settings.py`:
 
 ## 📸 Screenshots
 
-The application features a clean, Pinterest-inspired interface with:
-- Masonry-style pin layouts
-- Responsive design for all devices
-- Real-time social interactions
-- Intuitive navigation and search
+The application features a clean, Pinterest-inspired interface with intuitive navigation and responsive design:
+
+### User Authentication
+<table>
+<tr>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin1.jpg" alt="Register Page" width="100%">
+<p align="center"><em>User Registration</em></p>
+</td>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin2.jpg" alt="Login Page" width="100%">
+<p align="center"><em>User Login</em></p>
+</td>
+</tr>
+</table>
+
+### Dashboard & Navigation
+<table>
+<tr>
+<td width="100%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin3.jpg" alt="Dashboard" width="100%">
+<p align="center"><em>Main Dashboard with Pinterest-style Masonry Layout</em></p>
+</td>
+</tr>
+</table>
+
+### Profile Management
+<table>
+<tr>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin4.jpg" alt="User Profile" width="100%">
+<p align="center"><em>User Profile with Pinboards</em></p>
+</td>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin5.jpg" alt="Edit Profile" width="100%">
+<p align="center"><em>Profile Editing Interface</em></p>
+</td>
+</tr>
+</table>
+
+### Content Management
+<table>
+<tr>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin6.jpg" alt="Pinboards List" width="100%">
+<p align="center"><em>Pinboard Management</em></p>
+</td>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin13.jpg" alt="Individual Pinboard" width="100%">
+<p align="center"><em>Individual Pinboard View</em></p>
+</td>
+</tr>
+</table>
+
+### Social Features
+<table>
+<tr>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin7.jpg" alt="Friends Page" width="100%">
+<p align="center"><em>Friends Management</em></p>
+</td>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin8.jpg" alt="Browse Public Boards" width="100%">
+<p align="center"><em>Browse Public Boards</em></p>
+</td>
+</tr>
+</table>
+
+### Content Creation
+<table>
+<tr>
+<td width="33%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin9.jpg" alt="Pin Creation" width="100%">
+<p align="center"><em>Pin an Image</em></p>
+</td>
+<td width="33%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin10.jpg" alt="Create Pinboard" width="100%">
+<p align="center"><em>Create Pinboard</em></p>
+</td>
+<td width="33%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin11.jpg" alt="Create Follow Stream" width="100%">
+<p align="center"><em>Create Follow Stream</em></p>
+</td>
+</tr>
+</table>
+
+### Follow Streams & Search
+<table>
+<tr>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin12.jpg" alt="Follow Streams" width="100%">
+<p align="center"><em>Manage Follow Streams</em></p>
+</td>
+<td width="50%">
+<img src="https://github.com/itsSirish/pin_to_beans/blob/main/images/pin14.jpg" alt="Search Results" width="100%">
+<p align="center"><em>Search Results</em></p>
+</td>
+</tr>
+</table>
 
 ## 🔐 Security Features
 
@@ -203,6 +297,7 @@ This project was developed as part of an academic assignment for CS6083 Database
 ## 👥 Authors
 
 - **Visweswar Sirish Parupudi** - [vsp7230@nyu.edu](mailto:vsp7230@nyu.edu)
+- **Keshav Rajput** - [kr3412@nyu.edu](mailto:kr3412@nyu.edu)
 
 ## 🎓 Academic Context
 
