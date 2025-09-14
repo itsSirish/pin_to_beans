@@ -297,8 +297,8 @@ This project was developed as part of an academic assignment for CS6083 Database
 ## 👥 Authors
 
 - **Visweswar Sirish Parupudi** - [vsp7230@nyu.edu](mailto:vsp7230@nyu.edu)
-- **Keshav Rajput** - [kr3412@nyu.edu](mailto:kr3412@nyu.edu)
 
+  
 ## 🎓 Academic Context
 
 This project was developed for **CS6083 Database Systems, Spring 2025** at New York University. It demonstrates advanced database design principles, full-stack web development, and modern software engineering practices.
