@@ -3,8 +3,7 @@
 A Pinterest-inspired social platform built with Django that allows users to create personalized pinboards, share images, and discover content through curated follow streams.
 
 ![PinToBeans Architecture](https://github.com/itsSirish/pin_to_beans/blob/main/PinToBeans%20Architecture.png)
-![PinToBeans Page]([https://github.com/itsSirish/pin_to_beans/blob/main/PinToBeans%20Architecture.png](https://github.com/itsSirish/pin_to_beans/blob/main/images/pin3.jpg))
-
+![PinToBeans Page](https://github.com/itsSirish/pin_to_beans/blob/main/images/pin3.jpg)
 
 ## 🚀 Features
 
