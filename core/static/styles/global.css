@@ -1,0 +1,471 @@
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL.CSS (cleaned)
+───────────────────────────────────────────────────────────── */
+
+/* CSS Reset & Variables */
+:root {
+  --bg: #F5F5DC;
+  --surface: #FFFFFF;
+  --text: #5D4037;
+  --accent: #8BC34A;
+  --highlight: #D2B48C;
+  --border: #ddd;
+  --pin-image-height: 240px;
+  --pin-card-width: 220px;
+  --border-radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+/* Base Elements */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Layout Components */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 100%;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  gap: 20px;
+  z-index: 100;
+}
+
+.sidebar a {
+  font-size: 24px;
+  text-decoration: none;
+}
+
+.top-bar {
+  margin-left: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #fafafa;
+  border-bottom: 1px solid var(--border);
+}
+
+.top-bar input[type="text"] {
+  width: 300px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+#main-content {
+  margin-left: 60px;
+}
+
+/* Sidebar Dropdown Menu */
+.sidebar-menu {
+  position: relative;
+}
+
+.sidebar-menu summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 24px;
+  margin: 0;
+}
+
+.sidebar-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.sidebar-menu .menu-list {
+  position: absolute;
+  top: 0;
+  left: 60px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.25rem 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  list-style: none;
+  margin: 0;
+  white-space: nowrap;
+  display: none;
+  z-index: 200;
+}
+
+.sidebar-menu[open] .menu-list {
+  display: block;
+}
+
+.sidebar-menu .menu-list li a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--text);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.sidebar-menu .menu-list li a:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Pin Cards */
+/* Pin Cards - Core Component */
+.pin-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: none;
+  transition: transform 0.2s;
+}
+
+.pin-card:hover {
+  transform: scale(1.02);
+}
+
+.pin-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pin-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+/* Pin Card Overlays */
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pin-image-wrapper:hover .overlay {
+  opacity: 1;
+}
+
+/* Repin Button */
+.hover-repin {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pin-image-wrapper:hover .hover-repin {
+  opacity: 1;
+}
+
+.hover-repin form {
+  margin: 0;
+}
+
+.hover-repin button {
+  background-color: #007bff;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Pin Actions */
+.actions {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  left: auto;
+  z-index: 10;
+}
+
+
+/* Like Button Styling */
+.like-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.heart-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: transform 0.2s, opacity 0.2s;
+  text-shadow: 0 0 3px rgba(0,0,0,0.3);
+}
+
+.heart-button:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.heart-button.liked {
+  opacity: 1;
+}
+
+.like-count {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Board Cards */
+.board-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.board-card:hover {
+  transform: scale(1.02);
+}
+
+.board-title {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.category-label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.thumb-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.thumb-wrapper {
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.thumb-wrapper img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+}
+
+.stream-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+.board-card:hover .stream-button {
+  opacity: 1;
+}
+
+.stream-button button {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.stream-button button:hover {
+  background-color: #0056b3;
+}
+
+/* Profile Picture */
+.pfp-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.profile-picture img {
+  width: 120px;
+  height: 120px;
+  max-width: none;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+/* Grid Layouts */
+.pin-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 20px 60px;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Dashboard Styles */
+.dashboard-heading {
+  margin: 30px 60px 10px;
+  font-size: 1.8rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tab-toggle-container {
+  display: flex;
+  gap: 24px;
+  margin: 0 60px 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 6px;
+}
+
+.tab-toggle {
+  font-size: 1rem;
+  color: #333;
+  text-decoration: none;
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-toggle:hover {
+  color: #007bff;
+}
+
+.tab-toggle.active {
+  color: #007bff;
+  font-weight: 600;
+  border-bottom: 2px solid #007bff;
+}
+
+/* Messages */
+.messages {
+  list-style: none;
+  padding: 10px;
+  margin: 0 0 20px 0;
+}
+
+.messages li {
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+}
+
+.messages li.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.messages li.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.messages li.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.messages li.info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* Loading Indicator */
+#ajax-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty States */
+.empty-message {
+  margin-left: 60px;
+  color: #777;
+  font-style: italic;
+  padding: 20px;
+}

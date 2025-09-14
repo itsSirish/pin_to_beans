@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Board: {{ board.name }}{% endblock %}
+
+
+
+{% block content %}
+<div class="board-header">
+    <h2>📌 {{ board.name }} <small style="font-size: 1rem; color: #777;">({{ board.category }})</small></h2>
+    <p><strong>Owner:</strong> <a href="{% url 'profile' board.user.user_id %}" data-ajax>{{ board.user.name }}</a></p>
+</div>
+
+<div class="pin-grid">
+    {% for pin in pins %}
+    <div class="pin-card">
+        <a href="{% url 'pin_detail' pin.pin_id %}" data-ajax>
+            <img src="{% url 'image_blob' pin.image.image_id %}" alt="Pin Image">
+        </a>
+        <div class="actions">
+            <form method="post" action="{% url 'like_pin' %}">
+                {% csrf_token %}
+                <input type="hidden" name="pin_id" value="{{ pin.pin_id }}">
+                {% if pin.pin_id in liked_pins %}
+                    <button class="btn-unlike" type="submit">💔 Unlike</button>
+                {% else %}
+                    <button class="btn-like" type="submit">❤️ Like</button>
+                {% endif %}
+            </form>
+
+            {% if request.session.user_id != pin.user.user_id %}
+            <form method="get" action="{% url 'repin_select_board' pin.pin_id %}">
+                <button class="btn-repin" type="submit">🔁 Repin</button>
+            </form>
+            {% endif %}
+
+            {% if is_owner %}
+            <form method="post" action="{% url 'delete_pin' pin.pin_id %}">
+                {% csrf_token %}
+                <button class="btn-delete" type="submit">🗑️ Delete</button>
+            </form>
+            {% endif %}
+        </div>
+        {% if board.friends_only_comments and not pin.can_comment %}
+            <p class="comment-note">🔒 Friends-only comments</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

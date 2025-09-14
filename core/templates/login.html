@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | PinToBeans</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+  <style>
+    body {
+      margin: 0;
+      background: #F5F5DC;             /* nice beige */
+      color: #5D4037;                  /* pinto-bean brown */
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-wrapper {
+      background: #FFFFFF;
+      border: 2px solid #D2B48C;      /* tan highlight */
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+      max-width: 90%;
+      padding: 2rem;
+    }
+    .login-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .login-header img {
+      width: 48px;
+      height: 48px;
+    }
+    .login-header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    /* messages */
+    .messages .message {
+      color: #CF6679;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .login-form p {
+      margin: 0 0 1rem;
+    }
+    .login-form p label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .login-form p input {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #F0EAD6;
+      color: #5D4037;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .login-form p input::placeholder {
+      color: #777;
+    }
+    .login-form button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background: #8BC34A;             /* leafy green accent */
+      color: #FFF;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .login-form button:hover {
+      background: #7AAF3A;
+    }
+
+    .signup {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .signup a {
+      color: #8BC34A;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .signup a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+
+    <div class="login-header">
+      <img src="{% static 'images/pintologo.jpg' %}" alt="PinToBeans Logo">
+      <h1>PinToBeans</h1>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <p class="message">{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" class="login-form">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Log In</button>
+    </form>
+
+    <p class="signup">
+      New user? <a href="{% url 'register' %}">Register here</a>
+    </p>
+  </div>
+
+</body>
+</html>

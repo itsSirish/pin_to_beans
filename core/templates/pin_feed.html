@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pin Feed{% endblock %}
+
+{% block styles %}
+<style>
+    /* .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    } */
+
+    /* .pin-card {
+        position: relative;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s;
+    }
+
+    .pin-card:hover {
+        transform: scale(1.03);
+    }
+
+    .pin-image-wrapper {
+        position: relative;
+    }
+
+    .pin-image-wrapper img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        display: block;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+
+    .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 8px;
+        text-align: center;
+        font-size: 14px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .pin-image-wrapper:hover .overlay {
+        opacity: 1;
+    }
+
+    .hover-repin {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .pin-image-wrapper:hover .hover-repin {
+        opacity: 1;
+    }
+
+    .hover-repin form {
+        margin: 0;
+    }
+
+    .hover-repin button {
+        background-color: #007bff;
+        color: white;
+        padding: 6px 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 10px;
+    } */
+
+    /* .actions form {
+        flex: 1;
+    }
+
+    .actions button {
+        width: 100%;
+        padding: 6px 8px;
+        font-size: 14px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .like-btn {
+        background-color: #e60023;
+        color: white;
+    }
+
+
+    .repin-btn {
+        background-color: #007bff;
+        color: white;
+    } */
+
+    /* .empty-message {
+        padding: 20px;
+        color: #777;
+        font-style: italic;
+        text-align: center;
+    } */
+
+
+        /* Remove all borders and white space */
+    .pin-card {
+        position: relative;
+        height: 240px;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+        overflow: visible;
+    }
+    
+    .pin-image-wrapper {
+        height: 100%;
+        border-radius: 0;
+        overflow: hidden;
+    }
+    
+    .pin-image-wrapper img {
+        border-radius: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Position like button */
+    .actions {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        left: auto;
+        z-index: 10;
+    }
+    
+    .like-container {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .heart-button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.8;
+        transition: transform 0.2s, opacity 0.2s;
+    }
+    
+    .heart-button.liked {
+        opacity: 1;
+    }
+    
+    /* Fix grid spacing */
+    .pin-grid {
+        gap: 8px;
+        padding: 20px 60px;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 style="padding: 20px;">📰 Recent Pins</h2>
+
+{% if pins %}
+<div class="grid">
+    {% for pin in pins %}
+    <div class="pin-card">
+        <div class="pin-image-wrapper">
+            <a href="{% url 'pin_detail' pin.pin_id %}" data-ajax>
+                <img src="{% url 'image_blob' pin.image.image_id %}" alt="Pin image">
+            </a>
+            
+            {% if request.session.user_id != pin.user.user_id %}
+            <div class="hover-repin">
+                <form method="get" action="{% url 'repin_select_board' pin.pin_id %}" data-ajax>
+                    <button type="submit">🔁 Repin</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="actions">
+            <div class="like-container">
+                <form class="ajax-like-form" data-pin-id="{{ pin.pin_id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="pin_id" value="{{ pin.pin_id }}">
+                    <button type="button" class="heart-button {% if pin.root_pin_id in liked_pins %}liked{% endif %}">
+                        ❤️
+                    </button>
+                </form>
+                <span class="like-count" data-pin-id="{{ pin.root_pin_id }}">
+                    {{ pin.likes_set.count }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+    {% endfor %}
+</div>
+{% else %}
+    <p class="empty-message">No pins to show right now. Follow more boards or create some pins!</p>
+{% endif %}
+
+<p style="padding: 20px;"><a href="{% url 'dashboard' %}" data-ajax>← Back to Dashboard</a></p>
+{% endblock %}

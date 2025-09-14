@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><title>Send Friend Request</title></head>
+<body>
+    <h2>Send a Friend Request</h2>
+
+    {% if messages %}
+        <ul style="color: red;">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send Request</button>
+    </form>
+
+    <p><a href="{% url 'dashboard' %}">← Back to Dashboard</a></p>
+</body>
+</html>

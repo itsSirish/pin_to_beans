@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><title>Friend Requests</title></head>
+<body>
+    <h2>📨 Incoming Friend Requests</h2>
+
+    {% if requests %}
+        <ul>
+        {% for req in requests %}
+            <li>
+                {{ req.requester.name }} ({{ req.requester.email }})<br>
+                <a href="{% url 'handle_friend_request' req.requester_id 'accept' %}">✅ Accept</a>
+                |
+                <a href="{% url 'handle_friend_request' req.requester_id 'reject' %}">❌ Reject</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pending requests.</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">← Back to Dashboard</a></p>
+</body>
+</html>

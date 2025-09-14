@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}{{ target_user.name }}'s Profile{% endblock %}
+{% block styles %}
+<style>
+  /* Profile Page Styles */
+  .profile-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 60px;
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .profile-info h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.8rem;
+  }
+
+  .profile-info p {
+    margin: 5px 0;
+    color: #555;
+  }
+
+  .profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .profile-actions button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .pending-text {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+
+  .board-section {
+    margin-bottom: 30px;
+  }
+
+  .board-section h3 {
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+  }
+
+  .thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .stream-button-wrapper {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .stream-button-wrapper button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="profile-wrapper">
+
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-picture">
+      {% if target_profile_picture %}
+        <img src="{% url 'image_blob' target_profile_picture.image_id %}" alt="Profile Picture">
+      {% else %}
+        <img src="{% static 'images/default_pfp.jpg' %}" alt="No PFP">
+      {% endif %}
+    </div>
+    <div class="profile-info">
+      <h2>{{ target_user.name }}</h2>
+      <p>{{ target_user.email }}</p>
+      <p>Friends:
+        <a href="{% url 'profile_friends' target_user.user_id %}" data-ajax>
+          {{ friend_count }}
+        </a>
+      </p>
+      <div class="profile-actions">
+        {% if show_friend_button %}
+          <div id="friend-btn-container">
+            <button
+              id="send-friend-btn"
+              data-url="{% url 'send_friend_request' %}"
+              data-email="{{ target_user.email }}"
+            >➕ Send Friend Request</button>
+          </div>
+        {% elif is_friend %}
+          <form method="post" action="{% url 'unfriend' %}">
+            {% csrf_token %}
+            <input type="hidden" name="target_user_id" value="{{ target_user.user_id }}">
+            <button type="submit">❌ Unfriend</button>
+          </form>
+        {% elif request_pending %}
+          <p class="pending-text">🕓 Request Pending</p>
+        {% endif %}
+
+        {% if request.session.user_id == target_user.user_id %}
+          <form method="get" action="{% url 'edit_profile' %}">
+            <button type="submit">✏️ Edit Profile</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Pinboards -->
+  <div class="board-section">
+    <h3>📌 {{ target_user.name }}'s Pinboards</h3>
+    <div class="board-grid">
+      {% for board in boards %}
+        <div class="board-card">
+          <div class="board-title">
+            <a href="{% url 'board_detail' board.board_id %}" data-ajax>
+              {{ board.name }} ({{ board.category }})
+            </a>
+          </div>
+          <div class="thumb-grid">
+            {% for image in preview_images|get_item:board.board_id %}
+              <div class="thumb-wrapper">
+                <img src="{% url 'image_blob' image.image_id %}" alt="Preview">
+              </div>
+            {% empty %}
+              <div style="font-size:0.9rem; color:#777; padding:0.5rem;">
+                No pins yet
+              </div>
+            {% endfor %}
+          </div>
+          {% if request.session.user_id != target_user.user_id %}
+            <div class="stream-button-wrapper">
+              <form method="get" action="{% url 'add_to_stream' board.board_id %}">
+                <button type="submit">➕ Add to Stream</button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <a href="{% url 'dashboard' %}" data-ajax class="back-link">
+    ← Back to Dashboard
+  </a>
+</div>
+
+
+{% endblock %}

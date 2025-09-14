@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | PinToBeans</title>
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Your global styles -->
+  <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+  <style>
+    body {
+      margin: 0;
+      background: #F5F5DC;
+      color: #5D4037;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .register-wrapper {
+      background: #FFFFFF;
+      border: 2px solid #D2B48C;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+      max-width: 90%;
+      padding: 2rem;
+    }
+    .register-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .register-header img {
+      width: 48px;
+      height: 48px;
+    }
+    .register-header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    .messages .message {
+      color: #CF6679;
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    .register-form p {
+      margin: 0 0 1rem;
+    }
+    .register-form label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    .register-form input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #F0EAD6;
+      color: #5D4037;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .register-form input::placeholder {
+      color: #777;
+    }
+    .register-form button {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 4px;
+      background: #8BC34A;
+      color: #FFF;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .register-form button:hover {
+      background: #7AAF3A;
+    }
+    .login-link {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .login-link a {
+      color: #8BC34A;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+    /* Error styling */
+    .field-error {
+      color: #CF6679;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="register-wrapper">
+    <div class="register-header">
+      <img src="{% static 'images/pintologo.jpg' %}" alt="PinToBeans Logo">
+      <h1>PinToBeans</h1>
+    </div>
+
+    {# Form-level (non-field) errors #}
+    {% if form.non_field_errors %}
+      <div class="messages">
+        {% for error in form.non_field_errors %}
+          <p class="message">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" class="register-form">
+      {% csrf_token %}
+      <p>
+        <label for="{{ form.name.id_for_label }}">Your Name</label>
+        {{ form.name }}
+        {% for error in form.name.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </p>
+      <p>
+        <label for="{{ form.email.id_for_label }}">Email Address</label>
+        {{ form.email }}
+        {% for error in form.email.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </p>
+      <p>
+        <label for="{{ form.password1.id_for_label }}">Password</label>
+        {{ form.password1 }}
+        {% for error in form.password1.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </p>
+      <p>
+        <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+        {{ form.password2 }}
+        {% for error in form.password2.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </p>
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <p class="login-link">
+      Already have an account? <a href="{% url 'login' %}">Login here</a>
+    </p>
+  </div>
+
+</body>
+</html>

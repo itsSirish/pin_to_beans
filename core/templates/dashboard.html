@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block styles %}
+<style>
+    /* Remove all borders and white space */
+    .pin-card {
+        position: relative;
+        height: 240px;
+        border-radius: 0;
+        box-shadow: none;
+        background: transparent;
+        overflow: hidden;
+    }
+    
+    .pin-image-wrapper {
+        height: 100%;
+        border-radius: 0;
+        overflow: hidden;
+    }
+    
+    .pin-image-wrapper img {
+        border-radius: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    /* Position like button */
+    .actions {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        left: auto;
+        z-index: 10;
+    }
+    
+    .like-container {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .heart-button {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 1.2rem;
+        cursor: pointer;
+        opacity: 0.4;
+        transition: transform 0.2s, opacity 0.2s;
+    }
+    
+    .heart-button.liked {
+        opacity: 1;
+    }
+    
+    /* Fix grid spacing */
+    .pin-grid {
+        gap: 8px;
+        padding: 20px 60px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h2 class="dashboard-heading">📌 Your Dashboard</h2>
+
+<div class="tab-toggle-container">
+  <a href="{% url 'dashboard' %}" data-ajax
+     class="tab-toggle {% if not active_stream_id %}active{% endif %}">All</a>
+
+  {% for stream in follow_streams %}
+    <a href="{% url 'dashboard' stream.stream_id %}" data-ajax
+       class="tab-toggle {% if active_stream_id == stream.stream_id %}active{% endif %}">
+      {{ stream.name }}
+    </a>
+  {% endfor %}
+</div>
+
+<div class="pin-grid">
+    {% for pin in pins %}
+    <div class="pin-card">
+        <div class="pin-image-wrapper">
+            <a href="{% url 'pin_detail' pin.pin_id %}" data-ajax>
+                <img src="{% url 'image_blob' pin.image.image_id %}" alt="Pin image">
+            </a>
+            
+            {% if request.session.user_id != pin.user.user_id %}
+            <div class="hover-repin">
+                <form method="get" action="{% url 'repin_select_board' pin.pin_id %}" data-ajax>
+                    <button type="submit">🔁 Repin</button>
+                </form>
+            </div>
+            {% endif %}
+            
+            <div class="actions">
+                <div class="like-container">
+                    <form class="ajax-like-form" data-pin-id="{{ pin.pin_id }}">
+                        {% csrf_token %}
+                        <input type="hidden" name="pin_id" value="{{ pin.pin_id }}">
+                        <button type="button" class="heart-button {% if pin.root_pin_id in liked_pins %}liked{% endif %}">
+                            ❤️
+                        </button>
+                    </form>
+                    <span class="like-count" data-pin-id="{{ pin.root_pin_id }}">
+                        {{ pin.likes_set.count }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p class="empty-message">No pins to show. Start following boards or upload your first pin!</p>
+    {% endfor %}
+</div>
+{% endblock %}

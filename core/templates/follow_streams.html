@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Follow Streams{% endblock %}
+
+{% block styles %}
+<style>
+    .streams-container {
+        padding: 20px 60px;
+        max-width: 800px;
+        margin: 40px auto;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+    }
+
+    .stream-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .stream-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+
+    .stream-item a {
+        font-weight: bold;
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    .stream-item a:hover {
+        text-decoration: underline;
+    }
+
+    .stream-item form {
+        margin: 0;
+    }
+
+    .stream-item button {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+
+    .stream-item button:hover {
+        background-color: #c82333;
+    }
+
+    .actions {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .actions a {
+        margin: 0 15px;
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--accent);
+    }
+
+    .actions a:hover {
+        text-decoration: underline;
+    }
+
+    .no-streams {
+        color: #666;
+        font-style: italic;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="streams-container">
+    <h2>📂 Your Follow Streams</h2>
+
+    {% if streams %}
+        <ul class="stream-list">
+            {% for stream in streams %}
+                <li class="stream-item">
+                    <a href="{% url 'dashboard' stream.stream_id %}" data-ajax>
+                        {{ stream.name }}
+                    </a>
+                    <form method="post" action="{% url 'delete_follow_stream' stream.stream_id %}" onsubmit="return confirm('Delete this stream?');">
+                        {% csrf_token %}
+                        <button type="submit">🗑️ Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="no-streams">You don’t have any follow streams yet.</p>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{% url 'create_follow_stream' %}" data-ajax>➕ Create a New Stream</a>
+        <a href="{% url 'dashboard' %}" data-ajax>← Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

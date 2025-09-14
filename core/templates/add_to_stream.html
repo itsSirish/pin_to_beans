@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add to Stream{% endblock %}
+
+{% block content %}
+<div class="add-to-stream-container" style="max-width: 600px; margin: 40px auto; padding: 2rem; background: #fefefe; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+
+    <h2 style="font-size: 1.6rem; font-weight: bold; margin-bottom: 1.5rem;">
+        ➕ Add "<span style="color: #333;">{{ board.name }}</span>" to one of your follow streams
+    </h2>
+
+    <form method="post" style="display: flex; flex-direction: column; gap: 1rem;">
+        {% csrf_token %}
+
+        <label for="stream" style="font-weight: 500;">Choose Stream:</label>
+        <select name="stream_id" id="stream" required
+                style="padding: 0.6rem; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;">
+            {% for stream in streams %}
+                <option value="{{ stream.stream_id }}">{{ stream.name }}</option>
+            {% empty %}
+                <option disabled>You have no streams</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit"
+                style="padding: 0.6rem 1.2rem; background-color: #007BFF; color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer;">
+            Add to Stream
+        </button>
+    </form>
+
+    <div style="margin-top: 1.5rem;">
+        <a href="{% url 'profile' board.user_id %}" style="color: #007bff; text-decoration: none;">
+            ← Back to Profile
+        </a>
+    </div>
+</div>
+{% endblock %}

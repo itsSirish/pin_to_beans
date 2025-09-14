@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pin by {{ pin.user.name }}{% endblock %}
+
+{% block styles %}
+<style>
+    .pin-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin: 40px;
+        align-items: flex-start;
+    }
+
+    .main-pin {
+        flex: 1 1 400px;
+        max-width: 460px;
+    }
+
+    .main-pin img {
+        width: 100%;
+        max-height: 460px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .interactions {
+        margin-top: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .interactions form button,
+    .comments form button {
+        padding: 8px 14px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .like-btn {
+        background-color: #e60023;
+        color: white;
+    }
+
+    .unlike-btn {
+        background-color: #555;
+        color: white;
+    }
+
+    .repin-btn {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .delete-btn {
+        background-color: #d9534f;
+        color: white;
+    }
+
+    .comments {
+        margin-top: 32px;
+    }
+
+    .comments h3 {
+        margin-bottom: 10px;
+    }
+
+    .comments form textarea {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        resize: vertical;
+    }
+
+    .comments ul {
+        margin-top: 10px;
+        padding-left: 16px;
+    }
+
+    .comments li {
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+    .related {
+        flex: 1 1 300px;
+    }
+
+    .related h3 {
+        margin-bottom: 12px;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+    .related-grid img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: transform 0.2s ease;
+    }
+
+    .related-grid a:hover img {
+        transform: scale(1.02);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 style="margin-left: 40px;">
+    📌 Pin by <a href="{% url 'profile' pin.user.user_id %}" data-ajax>{{ pin.user.name }}</a>
+</h2>
+
+<div class="pin-container">
+    <div class="main-pin">
+        <img src="{% url 'image_blob' pin.image.image_id %}" alt="Pin Image">
+
+        {% if tags %}
+        <div class="tags" style="margin-top: 10px;">
+            <strong>🏷️ Tags:</strong>
+            {% for tag in tags %}
+                <span style="display: inline-block; background: #eee; border-radius: 12px; padding: 4px 10px; margin: 4px; font-size: 0.85rem;">
+                    {{ tag.name }}
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="interactions">
+            <form method="post" action="{% url 'like_pin' %}">
+                {% csrf_token %}
+                <input type="hidden" name="pin_id" value="{{ pin.pin_id }}">
+                {% if liked %}
+                    <button type="submit" class="unlike-btn">💔 Unlike</button>
+                {% else %}
+                    <button type="submit" class="like-btn">❤️ Like</button>
+                {% endif %}
+            </form>
+
+            {% if request.session.user_id != pin.user.user_id %}
+                <form method="get" action="{% url 'repin_select_board' pin.pin_id %}">
+                    <button type="submit" class="repin-btn">🔁 Repin</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'delete_pin' pin.pin_id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">🗑️ Delete Pin</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="comments">
+            <h3>💬 Comments</h3>
+            <form method="post" action="{% url 'comment_pin' %}">
+                {% csrf_token %}
+                <input type="hidden" name="pin_id" value="{{ pin.pin_id }}">
+                <textarea name="text" placeholder="Add a comment" rows="3"></textarea><br>
+                <button type="submit">Post</button>
+            </form>
+
+            <ul>
+                {% for comment in comments %}
+                    <li><strong>{{ comment.user.name }}</strong>: {{ comment.text }}</li>
+                {% empty %}
+                    <li>No comments yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="related">
+        <h3>🖼️ Related Pins</h3>
+        <div class="related-grid">
+            {% for rpin in related_pins %}
+                <a href="{% url 'pin_detail' rpin.pin_id %}" data-ajax>
+                    <img src="{% url 'image_blob' rpin.image.image_id %}" alt="Related Pin">
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<p style="margin-left: 40px; padding-bottom: 30px;">
+    <a href="{% url 'dashboard' %}" data-ajax>← Back to Dashboard</a>
+</p>
+{% endblock %}
+

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Browse Boards{% endblock %}
+
+{% block styles %}
+<style>
+    .board-container {
+        padding: 20px 60px;
+    }
+
+    .board-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    /* .board-card {
+        position: relative;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        transition: transform 0.2s;
+        cursor: pointer;
+    } */
+
+    .board-card:hover {
+        transform: scale(1.02);
+    }
+
+    .board-title {
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: var(--accent);
+    }
+
+    .category-label {
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 8px;
+    }
+
+    .thumb-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+
+    .thumb-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .thumb-wrapper {
+        overflow: hidden;
+        border-radius: 4px;
+    }
+
+    .thumb-wrapper img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        display: block;
+        border-radius: 4px;
+    }
+
+    .stream-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+
+    .board-card:hover .stream-button {
+        opacity: 1;
+    }
+
+    /* .stream-button button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+    } */
+
+    .stream-button button:hover {
+        background-color: #0056b3;
+    }
+
+    .message-list {
+        color: red;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="board-container">
+    <h2>🌐 Browse Public Boards</h2>
+
+    {% if not hide_messages and messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if boards %}
+    <div class="board-grid">
+        {% for board in boards %}
+        <div class="board-card" data-href="{% url 'board_detail' board.board_id %}" onclick="loadMainContentFromURL(this.dataset.href)">
+            <div class="board-title">{{ board.name }} </div>
+            <div class="category-label">({{ board.category }})</div>
+
+            <div class="thumb-row">
+                {% for image in preview_images|get_item:board.board_id %}
+                    <div class="thumb-wrapper">
+                        <img src="{% url 'image_blob' image.image_id %}" alt="Preview">
+                    </div>
+                {% empty %}
+                    <div style="font-size: 0.85rem; color: #777;">No pins yet</div>
+                {% endfor %}
+            </div>
+
+            <div class="stream-button">
+                <form method="get" action="{% url 'add_board_to_stream' board.board_id %}" onclick="event.stopPropagation()">
+                    <button type="submit" onclick="event.stopPropagation()">➕ Add to Stream</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>No public boards found.</p>
+    {% endif %}
+
+    <p style="margin-top: 20px;"><a href="{% url 'dashboard' %}" data-ajax>← Back to Dashboard</a></p>
+</div>
+{% endblock %}

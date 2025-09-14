@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}👥 Your Friends{% endblock %}
+
+{% block content %}
+<div class="friends-wrapper" style="margin-left:60px; padding:20px; max-width:600px;">
+  <h2>Friends</h2>
+  <ul id="friend-list">
+    {% if friends %}
+      {% for friend in friends %}
+        <li>
+          <a href="{% url 'profile' friend.user_id %}" data-ajax>
+            {{ friend.name }} ({{ friend.email }})
+          </a>
+        </li>
+      {% endfor %}
+    {% else %}
+      <p id="no-friends-msg">You have no friends yet.</p>
+    {% endif %}
+  </ul>
+
+  <hr style="margin:2rem 0;" />
+
+  <h3>Incoming Requests</h3>
+  <ul id="incoming-list">
+    {% if incoming %}
+      {% for req in incoming %}
+        <li data-req-id="{{ req.requester.user_id }}">
+          <a href="{% url 'profile' req.requester.user_id %}" data-ajax>
+            {{ req.requester.name }} ({{ req.requester.email }})
+          </a>
+          <form method="post"
+                action="{% url 'handle_friend_request' req.requester.user_id 'accept' %}"
+                style="display:inline"
+                class="ajax-friend-action">
+            {% csrf_token %}
+            <button type="submit">Accept</button>
+          </form>
+          <form method="post"
+                action="{% url 'handle_friend_request' req.requester.user_id 'reject' %}"
+                style="display:inline"
+                class="ajax-friend-action">
+            {% csrf_token %}
+            <button type="submit">Reject</button>
+          </form>
+        </li>
+      {% endfor %}
+    {% else %}
+      <p>No pending requests.</p>
+    {% endif %}
+  </ul>
+
+  <hr style="margin:2rem 0;" />
+
+  <h3>Add a Friend</h3>
+  <div id="new-friend-form">
+    <form id="send-request-form" method="post" action="{% url 'friend_list' %}">
+      {% csrf_token %}
+      {{ form.target_email }}
+      <button type="submit">Send Request</button>
+    </form>
+    <p id="request-status" style="color:#CF6679; margin-top:0.5rem;"></p>
+  </div>
+
+  <p style="margin-top:2rem;">
+    <a href="{% url 'dashboard' %}" data-ajax>← Back to Dashboard</a>
+  </p>
+</div>
+
+<script>
+// helper for AJAX POST → JSON
+function ajaxPost(url, data){
+  return fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: new URLSearchParams(data)
+  }).then(r => {
+    if (!r.ok) return r.json().then(j => Promise.reject(j.error || 'Error'));
+    return r.json();
+  });
+}
+
+// Send new friend request
+document.getElementById('send-request-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const form = e.target, status = document.getElementById('request-status');
+  ajaxPost(form.action, new FormData(form))
+    .then(json => {
+      status.textContent = `🕓 Pending request to ${json.email}`;
+      form.remove();
+    })
+    .catch(err => {
+      status.textContent = err;
+    });
+});
+
+// Accept/reject incoming requests
+document.querySelectorAll('.ajax-friend-action').forEach(form => {
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const f = e.target, listItem = f.closest('li');
+    ajaxPost(f.action, new FormData(f))
+      .then(json => {
+        // If accepted, add to friends list
+        if (json.result === 'accepted' && json.user) {
+          const noMsg = document.getElementById('no-friends-msg');
+          if (noMsg) noMsg.remove();
+          const fl = document.getElementById('friend-list');
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a href="/profile/${json.user.user_id}/" data-ajax>
+              ${json.user.name} (${json.user.email})
+            </a>`;
+          fl.appendChild(li);
+        }
+        // Remove from incoming
+        listItem.remove();
+      })
+      .catch(err => alert('Error: ' + err));
+  });
+});
+</script>
+{% endblock %}

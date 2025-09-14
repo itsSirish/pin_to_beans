@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block styles %}
+<style>
+    .edit-wrapper {
+        max-width: 500px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-wrapper h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .edit-wrapper label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 4px;
+        color: #444;
+    }
+
+    .edit-wrapper input[type="text"],
+    .edit-wrapper input[type="email"],
+    .edit-wrapper input[type="url"],
+    .edit-wrapper input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
+
+    .edit-wrapper .upload-section {
+        margin-bottom: 16px;
+    }
+
+    .edit-wrapper button {
+        background-color: var(--accent);
+        color: white;
+        padding: 10px 16px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .edit-wrapper button:hover {
+        background-color: #7AAF3A;
+    }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .messages {
+        color: green;
+        margin-bottom: 16px;
+        font-size: 0.95rem;
+    }
+
+    .upload-method {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .upload-method legend {
+        padding: 0 0.5rem;
+        font-weight: 500;
+    }
+    
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="edit-wrapper">
+    <h2>✏️ Edit Your Profile</h2>
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <label for="name">Name:</label>
+        <input type="text" name="name" id="name" value="{{ form.name.value }}">
+
+        <!-- Upload method -->
+        <fieldset class="upload-method">
+            <legend>Upload Method</legend>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="upload_method" value="file" checked> Upload from computer
+                </label>
+                <label>
+                    <input type="radio" name="upload_method" value="url"> Paste URL
+                </label>
+            </div>
+        </fieldset>
+
+        <!-- File input -->
+        <div class="field-group" id="file-input">
+            <label for="id_image_file">Profile Image:</label>
+            <input type="file" name="image_file" id="id_image_file" accept="image/*">
+        </div>
+        
+        <!-- URL input -->
+        <div class="field-group" id="url-input" style="display:none;">
+            <label for="id_image_url">Image URL:</label>
+            <input type="url" name="image_url" id="id_image_url" placeholder="https://example.com/image.jpg">
+        </div>
+
+        <button type="submit">💾 Save Changes</button>
+    </form>
+
+    <form method="post" action="{% url 'delete_user' %}" onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+    {% csrf_token %}
+    <button type="submit" style="
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-top: 20px;
+    ">🗑️ Delete Account</button>
+    </form>
+
+
+
+    <a href="{% url 'profile' request.session.user_id %}" data-ajax class="back-link">← Back to Profile</a>
+</div>
+{% endblock %}

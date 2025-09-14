@@ -1,0 +1,669 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}PinToBeans{% endblock %}</title>
+
+    <!-- Fonts and Global Styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter">
+    <link rel="stylesheet" href="{% static 'styles/global.css' %}">
+
+    {% block styles %}{% endblock %}
+
+    <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 60px; height: 100%;
+      background: #fff; border-right: 1px solid #ddd;
+      display: flex; flex-direction: column;
+      align-items: center; padding-top: 20px;
+      gap: 20px; z-index: 100;
+    }
+    .sidebar a {
+      font-size: 24px; text-decoration: none;
+    }
+    /* Create dropdown */
+    .sidebar-menu {
+      position: relative;
+    }
+    .sidebar-menu summary {
+      list-style: none; cursor: pointer;
+      font-size: 24px; margin: 0;
+    }
+    .sidebar-menu summary::-webkit-details-marker {
+      display: none;
+    }
+    .sidebar-menu .menu-list {
+      position: absolute; top: 0; left: 60px;
+      background: #fff; border: 1px solid #ddd;
+      border-radius: 6px; padding: 0.25rem 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      list-style: none; margin: 0; white-space: nowrap;
+      display: none; z-index: 200;
+    }
+    .sidebar-menu[open] .menu-list {
+      display: block;
+    }
+    .sidebar-menu .menu-list li a {
+      display: block; padding: 0.5rem 1rem;
+      color: var(--text); font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .sidebar-menu .menu-list li a:hover {
+      background: var(--accent); color: #fff;
+    }
+
+    .top-bar {
+      margin-left: 60px; display: flex;
+      align-items: center; justify-content: space-between;
+      padding: 10px 20px; background: #fafafa;
+      border-bottom: 1px solid #ddd;
+    }
+    .top-bar input[type="text"] {
+      width: 300px; padding: 8px;
+      border: 1px solid #ccc; border-radius: 4px;
+      font-size: 14px;
+    }
+    .pfp-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%; object-fit: cover;
+      cursor: pointer;
+    }
+    #main-content {
+      margin-left: 60px;
+    }
+    
+    /* Message styling */
+    .messages {
+      list-style: none;
+      padding: 10px;
+      margin: 0 0 20px 0;
+    }
+    
+    .messages li {
+      padding: 10px 15px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+    }
+    
+    .messages li.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .messages li.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .messages li.warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+    
+    .messages li.info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    /* Loading indicator */
+    #ajax-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+    {% block sidebar %}
+    <style>
+.sidebar {
+    width: 60px;
+    background-color: #f0f0f0;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    height: 100vh;
+    border-right: 1px solid #ddd;
+}
+
+.sidebar a, .sidebar summary {
+    text-align: center;
+    margin: 12px 0;
+    font-size: 1.4rem;
+    color: #333;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.sidebar a:hover, .sidebar summary:hover {
+    transform: scale(1.1);
+    color: var(--accent);
+}
+
+.sidebar-menu summary {
+    cursor: pointer;
+}
+
+.menu-list {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.menu-list li {
+    margin: 8px 0;
+}
+
+.menu-list a {
+    font-size: 0.95rem;
+    color: #555;
+    text-decoration: none;
+}
+
+.menu-list a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+</style>
+
+
+    <div class="sidebar">
+        <a href="{% url 'dashboard' %}" title="Home" data-ajax>🏠</a>
+
+        <details class="sidebar-menu">
+            <summary title="Create">➕</summary>
+            <ul class="menu-list">
+                <li><a href="{% url 'create_pin' %}" data-ajax onclick="this.closest('details').removeAttribute('open')">📌 Create Pin</a></li>
+                <li><a href="{% url 'pinboard_create' %}" data-ajax onclick="this.closest('details').removeAttribute('open')">🗂️ Create Board</a></li>
+                <li><a href="{% url 'create_follow_stream' %}" data-ajax onclick="this.closest('details').removeAttribute('open')">📚 Create Stream</a></li>
+            </ul>
+        </details>
+
+        <a href="{% url 'pinboard_list' %}" title="My Boards" data-ajax>📋</a>
+        <a href="{% url 'friend_list' %}" title="My Friends" data-ajax>👥</a>
+        <a href="{% url 'browse_boards' %}" title="Browse Boards" data-ajax>🗂️</a>
+        <a href="{% url 'follow_streams' %}" title="Follow Streams" data-ajax>📚</a>
+
+        <a href="{% url 'logout' %}" title="Logout">
+            <img src="{% static 'images/log-out.jpg' %}" alt="Logout" style="width: 24px; height: 24px;">
+        </a>
+    </div>
+    {% endblock %}
+
+  {% block topbar %}
+<style>
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+
+  .search-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #searchInput {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    width: 240px;
+    transition: border-color 0.2s;
+  }
+
+  #searchInput:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .search-group button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .search-group button:hover {
+    background-color: #6fae3f;
+  }
+
+  .pfp-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    object-fit: cover;
+    cursor: pointer;
+  }
+</style>
+
+<div class="top-bar">
+  <div class="search-group">
+    <input type="text" id="searchInput" placeholder="Search " onkeydown="if(event.key==='Enter') searchNow()">
+    <button type="button" onclick="searchNow()">🔍</button>
+  </div>
+  <div>
+    {% if request.session.user_id %}
+      <a href="{% url 'profile' request.session.user_id %}" data-ajax>
+        {% if profile_picture %}
+          <img src="{% url 'image_blob' profile_picture.image_id %}" class="pfp-icon">
+        {% else %}
+          <img src="{% static 'images/default_pfp.jpg' %}" class="pfp-icon">
+        {% endif %}
+      </a>
+    {% else %}
+      <a href="{% url 'login' %}">
+        <img src="{% static 'images/default_pfp.jpg' %}" class="pfp-icon" title="Login">
+      </a>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function searchNow() {
+    const query = document.getElementById("searchInput").value;
+    if (query.trim() !== "") {
+      window.location.href = `/search/?q=${encodeURIComponent(query)}`;
+    }
+  }
+</script>
+{% endblock %}
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Messages -->
+  {% if not hide_messages and messages %}
+  <div style="margin-left: 60px; padding: 10px 20px;">
+    <ul class="messages">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Main Content -->
+  <div id="main-content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <!-- AJAX Navigation + Image Resizing -->
+  <script>
+    function showLoading() {
+      const loader = document.createElement('div');
+      loader.id = 'ajax-loader';
+      loader.innerHTML = '<div class="spinner"></div>';
+      document.body.appendChild(loader);
+    }
+    
+    function hideLoading() {
+      const loader = document.getElementById('ajax-loader');
+      if (loader) loader.remove();
+    }
+
+    
+
+
+    function initProfileForm() {
+      const fileInput = document.getElementById('file-input');
+      const urlInput = document.getElementById('url-input');
+      const radioButtons = document.querySelectorAll('input[name="upload_method"]');
+      
+      if (!fileInput || !urlInput || !radioButtons.length) return; // Exit if not on profile edit page
+      
+      function toggleUploadMethod() {
+        const selected = document.querySelector('input[name="upload_method"]:checked').value;
+        if (selected === 'file') {
+          fileInput.style.display = 'block';
+          urlInput.style.display = 'none';
+        } else {
+          fileInput.style.display = 'none';
+          urlInput.style.display = 'block';
+        }
+      }
+      
+      radioButtons.forEach(el => {
+        el.addEventListener('change', toggleUploadMethod);
+      });
+      
+      // Trigger on load
+      toggleUploadMethod();
+    }
+
+    function initTagify() {
+      const tagSelect = document.getElementById("id_tags");
+      const tagInput = document.getElementById("tagify-input");
+
+      if (!tagSelect || !tagInput) return;
+
+      // Hide the select box
+      tagSelect.style.display = "none";
+
+      // Build whitelist from options
+      const whitelist = Array.from(tagSelect.options).map(opt => opt.textContent);
+
+      const tagify = new Tagify(tagInput, {
+        whitelist: whitelist,
+        enforceWhitelist: true,
+        dropdown: {
+          enabled: 0,
+          closeOnSelect: false
+        }
+      });
+
+      // Preload selected values
+      const preselected = Array.from(tagSelect.selectedOptions).map(opt => opt.textContent);
+      tagify.addTags(preselected);
+
+      // Keep <select> in sync
+      tagify.on("change", () => {
+        const selectedValues = tagify.value.map(tag => tag.value);
+        for (let option of tagSelect.options) {
+          option.selected = selectedValues.includes(option.textContent);
+        }
+      });
+    }
+
+
+    
+    function refreshImageSizing(){
+      document.querySelectorAll('#main-content img').forEach(img=>{
+        if(img.closest('.profile-picture')) return;
+        if(img.closest('.pin-image-wrapper')){
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
+          img.style.margin = '0';
+          img.style.padding = '0';
+          img.style.borderRadius = '8px';
+        } else if(img.closest('.thumb-wrapper')){
+          img.style.width = '100%';
+          img.style.height = '100px';
+          img.style.objectFit = 'cover';
+        } else {
+          img.style.maxWidth = '100%';
+          img.style.height = 'auto';
+        }
+      });
+    }
+    
+    function initUploadForm() {
+      const radios = document.querySelectorAll('input[name="upload_method"]');
+      const fileField = document.getElementById('file-field');
+      const urlField = document.getElementById('url-field');
+      
+      if (!radios.length) return; // Exit if not on the upload form page
+      
+      radios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          fileField.style.display = radio.value === 'file' ? 'block' : 'none';
+          urlField.style.display = radio.value === 'url' ? 'block' : 'none';
+        });
+      });
+      
+      // Trigger initial state
+      const selected = document.querySelector('input[name="upload_method"]:checked');
+      if (selected) selected.dispatchEvent(new Event('change'));
+    }
+    
+    function loadMainContentFromURL(url, pushState=true){
+      showLoading();
+      fetch(url, { headers:{ 'X-Requested-With':'XMLHttpRequest' }})
+        .then(res=>{
+          if(res.redirected) {
+            hideLoading();
+            return window.location.href=res.url;
+          }
+          return res.text();
+        })
+        .then(html=>{
+          hideLoading();
+          if(!html) return;
+          const parser=new DOMParser(),
+                doc=parser.parseFromString(html,'text/html'),
+                nc=doc.querySelector('#main-content');
+          
+          // Extract and apply styles from the loaded content
+          const styles = doc.querySelectorAll('style');
+          styles.forEach(style => {
+            if(!document.querySelector(`style[data-ajax-loaded="${url}"]`)) {
+              const newStyle = document.createElement('style');
+              newStyle.textContent = style.textContent;
+              newStyle.setAttribute('data-ajax-loaded', url);
+              document.head.appendChild(newStyle);
+            }
+          });
+          
+          if(nc){
+            document.querySelector('#main-content').innerHTML=nc.innerHTML;
+            if(pushState) window.history.pushState({},'',url);
+            refreshImageSizing();
+            initUploadForm(); 
+            initProfileForm();
+            // Initialize form controls after content loads
+          }
+        })
+        .catch(error => {
+          hideLoading();
+          console.error('Error:', error);
+        });
+    }
+    
+    // Helper for POST→JSON
+    function ajaxPost(url, data){
+      showLoading();
+      return fetch(url,{
+        method:'POST',
+        headers:{
+          'X-Requested-With':'XMLHttpRequest',
+          'Content-Type':'application/x-www-form-urlencoded',
+          'X-CSRFToken':document.cookie.match(/csrftoken=([^;]+)/)[1]
+        },
+        body: data instanceof FormData ? data : new URLSearchParams(data)
+      })
+      .then(r=>{
+        hideLoading();
+        if(!r.ok) return r.json().then(j=>Promise.reject(j.error||j.message||'Error'));
+        return r.json();
+      })
+      .catch(error => {
+        hideLoading();
+        throw error;
+      });
+    }
+    
+    // AJAX navigation for links with data-ajax attribute
+    document.body.addEventListener('click', e => {
+      const a = e.target.closest('a[data-ajax]');
+      if (!a) return;
+      e.preventDefault();
+      loadMainContentFromURL(a.href);
+    });
+    
+    // Handle browser back/forward buttons
+    window.onpopstate = () => loadMainContentFromURL(location.href, false);
+    
+    // Handle like button clicks with AJAX
+    document.body.addEventListener('click', e => {
+      const likeBtn = e.target.closest('.ajax-like-form button');
+      if (!likeBtn) return;
+      
+      const form = likeBtn.closest('form');
+      const pinId = form.dataset.pinId;
+      const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)[1];
+      
+      fetch('{% url "like_pin" %}', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrfToken
+        },
+        body: new URLSearchParams({pin_id: pinId})
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Toggle the button text/icon based on the new like state
+        // Only toggle the class, don't change the inner HTML
+        if (data.liked) {
+            likeBtn.classList.add('liked');
+        } else {
+            likeBtn.classList.remove('liked');
+        }
+
+        
+        // Update like count
+        const countElements = document.querySelectorAll(`.like-count[data-pin-id="${pinId}"]`);
+        countElements.forEach(el => {
+          el.textContent = data.count;
+        });
+      })
+      .catch(error => console.error('Error:', error));
+    });
+    
+    // Handle comment form submission
+    document.body.addEventListener('click', e => {
+      const commentBtn = e.target.closest('.ajax-comment-form button');
+      if (!commentBtn) return;
+      
+      const form = commentBtn.closest('form');
+      const formData = new FormData(form);
+      
+      fetch('{% url "comment_pin" %}', {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)[1]
+        },
+        body: new URLSearchParams(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Add the new comment to the DOM
+          const commentsContainer = document.querySelector('.comments-container');
+          if (commentsContainer) {
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            newComment.innerHTML = `
+              <strong>${data.user_name}</strong>
+              <p>${data.text}</p>
+            `;
+            commentsContainer.prepend(newComment);
+            form.reset(); // Clear the form
+          }
+        }
+      });
+    });
+    
+    // Delegate "Send Friend Request" on profile
+    document.body.addEventListener('click', e => {
+      const btn = e.target.closest('#send-friend-btn');
+      if (!btn) return;
+      e.preventDefault();
+      ajaxPost(btn.dataset.url, { target_email: btn.dataset.email })
+        .then(json => {
+          btn.replaceWith(Object.assign(document.createElement('span'), {
+            textContent: '🕓 Request Pending',
+            className: 'pending-text'
+          }));
+        })
+        .catch(err => {
+          if (err.toLowerCase().includes('already sent')) {
+            btn.replaceWith(Object.assign(document.createElement('span'), {
+              textContent: '🕓 Request Pending',
+              className: 'pending-text'
+            }));
+          } else {
+            alert('Error: ' + err);
+          }
+        });
+    });
+    
+    // Delegate Accept/Reject on Friends page
+    document.body.addEventListener('submit', e => {
+      const form = e.target.closest('.ajax-friend-action');
+      if (!form) return;
+      e.preventDefault();
+      const li = form.closest('li');
+      ajaxPost(form.action, new FormData(form))
+        .then(json => {
+          if (json.result === 'accepted' && json.user) {
+            const fl = document.getElementById('friend-list'),
+                  noMsg = document.getElementById('no-friends-msg');
+            if (noMsg) noMsg.remove();
+            const item = document.createElement('li');
+            item.innerHTML = `
+              <a href="/profile/${json.user.user_id}/" data-ajax>
+                ${json.user.name} (${json.user.email})
+              </a>`;
+            fl.appendChild(item);
+          }
+          li.remove();
+        })
+        .catch(err => alert('Error: ' + err));
+    });
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      refreshImageSizing();
+      initUploadForm();
+      initProfileForm();
+
+
+    });
+  </script>
+</body>
+</html>
